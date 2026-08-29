@@ -285,6 +285,32 @@ Isso também funciona direto de um checkout que você já tenha localmente (`npm
 
 Pra atualizar depois de uma nova versão: rode o mesmo comando de novo (reinstala por cima).
 
+**Alternativa via Docker** (sem precisar de Node/pnpm/npm instalado no host): `apps/cli/Dockerfile`
+compila a partir do source (`pnpm install` + `tsc`) e produz uma imagem final mínima (o CLI não
+tem nenhuma dependência de runtime além de módulos nativos do Node, então a imagem final não leva
+`node_modules`). Buildar:
+
+```bash
+docker compose -f docker-compose.prod.yml --profile tools build cli
+```
+
+Rodar contra **este** repo (o volume do serviço `cli` no compose aponta pra raiz do spec-forge):
+
+```bash
+docker compose -f docker-compose.prod.yml --profile tools run --rm cli init --scope repo
+```
+
+Rodar contra **outro** projeto qualquer (monte o diretório de destino direto com `docker run`,
+usando a imagem que o `build` acima já deixou pronta como `spec-forge-cli`):
+
+```bash
+# PowerShell, a partir da pasta do projeto alvo
+docker run --rm -v "${PWD}:/workspace" -w /workspace spec-forge-cli init --scope repo
+
+# bash/git-bash no Windows precisa desabilitar a conversão automática de path do MSYS
+MSYS_NO_PATHCONV=1 docker run --rm -v "$(pwd):/workspace" -w /workspace spec-forge-cli init --scope repo
+```
+
 ### Uso
 
 ```bash

@@ -47,5 +47,16 @@ services:
     ports:
       - "${WEB_PORT_HOST:-3000}:3000"
 
+  cli:
+    build:
+      context: .
+      dockerfile: apps/cli/Dockerfile
+    image: spec-forge-cli
+    container_name: spec-forge-cli
+    profiles: ["tools"]
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+
 volumes:
   spec-forge-pgdata:
