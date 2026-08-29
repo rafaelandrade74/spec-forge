@@ -288,20 +288,14 @@ Pra atualizar depois de uma nova versão: rode o mesmo comando de novo (reinstal
 **Alternativa via Docker** (sem precisar de Node/pnpm/npm instalado no host): `apps/cli/Dockerfile`
 compila a partir do source (`pnpm install` + `tsc`) e produz uma imagem final mínima (o CLI não
 tem nenhuma dependência de runtime além de módulos nativos do Node, então a imagem final não leva
-`node_modules`). Buildar:
+`node_modules`). Não faz parte do `docker-compose.prod.yml` (não é um serviço persistente) — build
+e uso são via `docker build`/`docker run` direto, a partir da raiz do repo:
 
 ```bash
-docker compose -f docker-compose.prod.yml --profile tools build cli
+docker build -f apps/cli/Dockerfile -t spec-forge-cli .
 ```
 
-Rodar contra **este** repo (o volume do serviço `cli` no compose aponta pra raiz do spec-forge):
-
-```bash
-docker compose -f docker-compose.prod.yml --profile tools run --rm cli init --scope repo
-```
-
-Rodar contra **outro** projeto qualquer (monte o diretório de destino direto com `docker run`,
-usando a imagem que o `build` acima já deixou pronta como `spec-forge-cli`):
+Rodar contra qualquer projeto (monte o diretório de destino como `/workspace`):
 
 ```bash
 # PowerShell, a partir da pasta do projeto alvo
