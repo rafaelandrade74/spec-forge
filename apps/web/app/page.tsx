@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProjectService } from "@spec-forge/core";
 import { createProjectAction } from "./actions";
 import { ErrorBanner } from "./components/ErrorBanner";
+import { DeleteProjectButton } from "./components/DeleteProjectButton";
 
 export default async function DashboardPage({
   searchParams,
@@ -19,10 +20,17 @@ export default async function DashboardPage({
           <h2>Projetos</h2>
           {projects.length === 0 && <p style={{ color: "var(--text-muted)" }}>Nenhum projeto ainda.</p>}
           {projects.map((p) => (
-            <Link key={p.id} href={`/projects/${p.id}`} className="feature-card">
-              <div className="title">{p.name}</div>
-              <div className="meta">{p.slug}{p.description ? ` — ${p.description}` : ""}</div>
-            </Link>
+            <div
+              key={p.id}
+              className="feature-card"
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}
+            >
+              <Link href={`/projects/${p.id}`} style={{ flex: 1, minWidth: 0 }}>
+                <div className="title">{p.name}</div>
+                <div className="meta">{p.slug}{p.description ? ` — ${p.description}` : ""}</div>
+              </Link>
+              <DeleteProjectButton projectId={p.id} projectName={p.name} />
+            </div>
           ))}
         </section>
 

@@ -51,6 +51,14 @@ export async function createProjectAction(formData: FormData) {
   redirect("/");
 }
 
+export async function deleteProjectAction(formData: FormData) {
+  await withErrorRedirect("/", async () => {
+    await ProjectService.deleteProject(str(formData, "projectId"));
+    revalidatePath("/");
+  });
+  redirect("/");
+}
+
 export async function setConstitutionAction(formData: FormData) {
   const projectId = str(formData, "projectId");
   await withErrorRedirect(`/projects/${projectId}/constitution`, async () => {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FeatureService, ProjectService } from "@spec-forge/core";
 import { createFeatureAction, updateFeaturePriorityAction } from "../../actions";
 import { ErrorBanner } from "../../components/ErrorBanner";
+import { DeleteProjectButton } from "../../components/DeleteProjectButton";
 
 const COLUMNS: { key: string; label: string; statuses: string[] }[] = [
   { key: "backlog", label: "Backlog", statuses: ["backlog"] },
@@ -40,6 +41,7 @@ export default async function ProjectRoadmapPage({
         <div style={{ display: "flex", gap: 12 }}>
           <Link href={`/projects/${project.id}/constitution`}>Constitution</Link>
           <Link href={`/projects/${project.id}/queue`}>Fila de implementação</Link>
+          <DeleteProjectButton projectId={project.id} projectName={project.name} />
         </div>
       </div>
 

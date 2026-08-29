@@ -42,6 +42,12 @@ export async function getProjectBySlug(slug: string) {
   return project;
 }
 
+export async function deleteProject(projectId: string) {
+  const [deleted] = await db.delete(projects).where(eq(projects.id, projectId)).returning();
+  if (!deleted) throw new NotFoundError("Project", projectId);
+  return deleted;
+}
+
 function normalizePath(p: string) {
   return p.trim().replace(/\\/g, "/").replace(/\/+$/, "").toLowerCase();
 }
