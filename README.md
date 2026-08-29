@@ -122,6 +122,30 @@ dois consultam o banco direto, um dos dois podia bater numa tabela que ainda nã
 passo manual necessário pra isso. O que ainda é manual, de propósito, é criar o primeiro token: abra a Web UI publicada (`/tokens`) e siga o
 passo 1 acima — token não é algo que faça sentido gerar sozinho a cada boot do container.
 
+#### Usando um Postgres que você já tem (em vez de subir um novo)
+
+Se você já mantém um Postgres próprio (ex.: `docker-services/postgres`), use
+`docker-compose.external-db.yml` no lugar de `docker-compose.prod.yml` — ele não define serviço de
+`postgres`, só `migrate`, `mcp-server` e `web`, todos apontando para `DATABASE_URL`:
+
+```bash
+cp .env.prod.example .env
+# edite o .env: comente/apague POSTGRES_PASSWORD e defina DATABASE_URL apontando
+# pro seu Postgres existente, ex.:
+# DATABASE_URL=postgres://spec_forge:sua-senha@host.docker.internal:5432/spec_forge
+docker compose -f docker-compose.external-db.yml up -d --build
+```
+
+Duas coisas ficam por sua conta nesse modo:
+
+- **Criar o database.** O `migrate` só aplica as migrations *dentro* de um database que já exista —
+  crie o database (ex. `spec_forge`) e o usuário/senha no seu Postgres antes de subir.
+- **Alcançar o host.** Como o Postgres não está na mesma rede do compose do spec-forge, os
+  containers falam com ele pela porta publicada no host: no Docker Desktop (Windows/Mac),
+  `host.docker.internal` já resolve para o host; no Linux, adicione
+  `extra_hosts: ["host.docker.internal:host-gateway"]` aos serviços em
+  `docker-compose.external-db.yml` (ou use o IP da rede local do host diretamente).
+
 ### 3. Registrar no Claude Code (de qualquer máquina)
 
 ```bash

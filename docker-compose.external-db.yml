@@ -1,0 +1,40 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+    container_name: spec-forge-migrate
+    entrypoint: ["./docker-entrypoint.sh"]
+    restart: "no"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env, pointing at your existing Postgres}
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+    container_name: spec-forge-mcp-server
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env, pointing at your existing Postgres}
+      MCP_HTTP_PORT: 8787
+    ports:
+      - "${MCP_HTTP_PORT_HOST:-8787}:8787"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: spec-forge-web
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env, pointing at your existing Postgres}
+      PORT: 3000
+    ports:
+      - "${WEB_PORT_HOST:-3000}:3000"
