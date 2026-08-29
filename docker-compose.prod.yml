@@ -15,6 +15,19 @@ services:
       timeout: 5s
       retries: 10
 
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+    container_name: spec-forge-migrate
+    entrypoint: ["./docker-entrypoint.sh"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
+
   mcp-server:
     build:
       context: .
@@ -24,6 +37,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
       DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
       MCP_HTTP_PORT: 8787
@@ -39,6 +54,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     environment:
       DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
       PORT: 3000

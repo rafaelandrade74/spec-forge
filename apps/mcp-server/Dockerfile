@@ -23,4 +23,11 @@ WORKDIR /app/apps/mcp-server
 ENV NODE_ENV=production
 EXPOSE 8787
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+# Default CMD starts the server directly — no migration here. Migrations run once via a
+# dedicated "migrate" service in docker-compose.prod.yml (overriding this image's entrypoint to
+# ./docker-entrypoint.sh instead), which every other service waits on with
+# `condition: service_completed_successfully`. Running migrations from each app container's own
+# entrypoint independently would race on a fresh database — mcp-server and web start in parallel
+# once postgres is healthy, and drizzle's migrate() has no built-in locking against two
+# concurrent runs trying to create the same tables.
+CMD ["pnpm", "exec", "tsx", "src/http.ts"]

@@ -114,9 +114,12 @@ Isso sobe três serviços: `postgres` (só na rede interna do compose), `mcp-ser
 você já usa no seu `docker-services`) apontando para `mcp-server:8787/mcp` e `web:3000`; não exponha
 essas portas diretamente à internet sem TLS.
 
-As migrations rodam sozinhas toda vez que o container `mcp-server` sobe (é idempotente — não faz
-nada se já estiver tudo aplicado), então não precisa de nenhum passo manual pra isso. O que ainda
-é manual, de propósito, é criar o primeiro token: abra a Web UI publicada (`/tokens`) e siga o
+Um serviço `migrate` (one-shot, roda e sai — não fica de pé) aplica as migrations sozinho antes de
+qualquer outro serviço subir; `mcp-server` e `web` esperam ele terminar com sucesso
+(`condition: service_completed_successfully`) antes de iniciar. Isso evita uma race condition: sem
+essa espera, `mcp-server` e `web` sobem em paralelo assim que o Postgres fica saudável, e como os
+dois consultam o banco direto, um dos dois podia bater numa tabela que ainda não existia. Nenhum
+passo manual necessário pra isso. O que ainda é manual, de propósito, é criar o primeiro token: abra a Web UI publicada (`/tokens`) e siga o
 passo 1 acima — token não é algo que faça sentido gerar sozinho a cada boot do container.
 
 ### 3. Registrar no Claude Code (de qualquer máquina)
