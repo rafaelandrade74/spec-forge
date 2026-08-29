@@ -1,0 +1,31 @@
+{
+  "name": "@spec-forge/cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "spec-forge init — installs the /speckit-* skills that persist to Spec-Forge instead of local markdown files.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rafaelandrade74/spec-forge.git",
+    "directory": "apps/cli"
+  },
+  "type": "module",
+  "bin": {
+    "spec-forge": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "sync-templates": "node scripts/sync-templates.mjs",
+    "dev": "node scripts/sync-templates.mjs && tsx src/index.ts",
+    "build": "node scripts/sync-templates.mjs && tsc",
+    "prepare": "node scripts/sync-templates.mjs && tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spec-forge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: spec_forge
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: spec_forge
+    volumes:
+      - spec-forge-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spec_forge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mcp-server:
+    build:
+      context: .
+      dockerfile: apps/mcp-server/Dockerfile
+    container_name: spec-forge-mcp-server
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
+      MCP_HTTP_PORT: 8787
+    ports:
+      - "${MCP_HTTP_PORT_HOST:-8787}:8787"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
+    container_name: spec-forge-web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
+      PORT: 3000
+    ports:
+      - "${WEB_PORT_HOST:-3000}:3000"
+
+volumes:
+  spec-forge-pgdata:

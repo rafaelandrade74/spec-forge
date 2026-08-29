@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: spec-forge-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: spec_forge
+      POSTGRES_PASSWORD: spec_forge
+      POSTGRES_DB: spec_forge
+    ports:
+      - "5433:5432"
+    volumes:
+      - spec-forge-pgdata:/var/lib/postgresql/data
+
+volumes:
+  spec-forge-pgdata:
