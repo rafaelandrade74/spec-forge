@@ -34,8 +34,6 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-      args:
-        DATABASE_URL: postgres://spec_forge:${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}@postgres:5432/spec_forge
     container_name: spec-forge-web
     restart: unless-stopped
     depends_on:

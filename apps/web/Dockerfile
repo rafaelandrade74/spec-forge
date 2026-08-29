@@ -18,8 +18,9 @@ COPY apps/web apps/web
 
 WORKDIR /app/apps/web
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+# No DATABASE_URL needed at build time: every route is force-dynamic (see app/layout.tsx), so
+# `next build` never queries the database — only the running container does, via the
+# DATABASE_URL env var set at runtime (docker-compose `environment:`).
 RUN pnpm build
 
 ENV NODE_ENV=production
