@@ -1,0 +1,4 @@
+# Shell scripts get COPY'd verbatim into Linux containers — a CRLF line ending breaks the
+# shebang ("/bin/sh^M: bad interpreter") on checkout from a Windows machine with
+# core.autocrlf=true. Force LF regardless of platform.
+*.sh text eol=lf

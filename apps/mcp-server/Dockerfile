@@ -16,9 +16,11 @@ COPY packages/db packages/db
 COPY packages/core packages/core
 COPY apps/mcp-server apps/mcp-server
 
+RUN chmod +x apps/mcp-server/docker-entrypoint.sh
+
 WORKDIR /app/apps/mcp-server
 
 ENV NODE_ENV=production
 EXPOSE 8787
 
-CMD ["pnpm", "exec", "tsx", "src/http.ts"]
+ENTRYPOINT ["./docker-entrypoint.sh"]

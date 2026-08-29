@@ -107,14 +107,17 @@ pnpm token:revoke <id>      # revoga um token (não deleta o histórico de uso)
 ```bash
 cp .env.prod.example .env   # edite POSTGRES_PASSWORD com uma senha forte
 docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml run --rm mcp-server sh -c "cd /app/packages/db && pnpm migrate"
-docker compose -f docker-compose.prod.yml run --rm mcp-server sh -c "cd /app/apps/mcp-server && pnpm token:create homelab"
 ```
 
 Isso sobe três serviços: `postgres` (só na rede interna do compose), `mcp-server` (HTTP na porta
 8787) e `web` (porta 3000). Coloque um reverse proxy com TLS na frente (Caddy/Traefik/nginx — o que
 você já usa no seu `docker-services`) apontando para `mcp-server:8787/mcp` e `web:3000`; não exponha
 essas portas diretamente à internet sem TLS.
+
+As migrations rodam sozinhas toda vez que o container `mcp-server` sobe (é idempotente — não faz
+nada se já estiver tudo aplicado), então não precisa de nenhum passo manual pra isso. O que ainda
+é manual, de propósito, é criar o primeiro token: abra a Web UI publicada (`/tokens`) e siga o
+passo 1 acima — token não é algo que faça sentido gerar sozinho a cada boot do container.
 
 ### 3. Registrar no Claude Code (de qualquer máquina)
 
