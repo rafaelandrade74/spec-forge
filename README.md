@@ -133,6 +133,98 @@ o markdown final em `docs/features/`) só existe na máquina do desenvolvedor, n
 escrita do arquivo falha silenciosamente nesse caso (best-effort) e a documentação final continua
 disponível no banco/Web UI normalmente.
 
+## Integrar com outras IAs (MCP é um protocolo aberto)
+
+O Spec-Forge é um servidor MCP padrão (stdio local ou Streamable HTTP remoto) — funciona com
+qualquer cliente que fale o protocolo, não só o Claude Code. Os exemplos abaixo cobrem os mais
+populares; a sintaxe exata de cada um muda de versão pra versão, então se algo não bater, confira a
+doc de MCP da ferramenta. Em todos os casos: pra rodar local via stdio, use os mesmos argumentos do
+comando `claude mcp add` acima (`npx tsx <caminho absoluto>/apps/mcp-server/src/index.ts`); pra
+apontar pro homelab, troque por `url` + header `Authorization: Bearer <token>` (gerado em
+`/tokens` na Web UI).
+
+### GitHub Copilot (VS Code)
+
+Arquivo `.vscode/mcp.json` no projeto (ou no `mcp.json` de user settings, pra ficar disponível em
+todo workspace):
+
+```json
+{
+  "servers": {
+    "spec-forge": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["tsx", "C:\\caminho\\absoluto\\para\\spec-forge\\apps\\mcp-server\\src\\index.ts"]
+    }
+  }
+}
+```
+
+Versão HTTP (homelab):
+
+```json
+{
+  "servers": {
+    "spec-forge": {
+      "type": "http",
+      "url": "https://seu-dominio.exemplo/mcp",
+      "headers": { "Authorization": "Bearer sf_SEU_TOKEN_AQUI" }
+    }
+  }
+}
+```
+
+### OpenAI Codex CLI
+
+`~/.codex/config.toml`:
+
+```toml
+[mcp_servers.spec-forge]
+command = "npx"
+args = ["tsx", "/caminho/absoluto/para/spec-forge/apps/mcp-server/src/index.ts"]
+```
+
+### Cursor
+
+`.cursor/mcp.json` no projeto (ou `~/.cursor/mcp.json` global):
+
+```json
+{
+  "mcpServers": {
+    "spec-forge": {
+      "command": "npx",
+      "args": ["tsx", "/caminho/absoluto/para/spec-forge/apps/mcp-server/src/index.ts"]
+    }
+  }
+}
+```
+
+Homelab (HTTP): troque `command`/`args` por `"url": "https://seu-dominio.exemplo/mcp", "headers": { "Authorization": "Bearer sf_SEU_TOKEN_AQUI" }`.
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`, mesmo formato `mcpServers` do Cursor acima.
+
+### Cline (extensão VS Code)
+
+Configurável pela própria UI da extensão ("MCP Servers" → "Configure"), que edita
+`cline_mcp_settings.json` — mesmo formato `mcpServers` do Cursor.
+
+### Gemini CLI
+
+`~/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "spec-forge": {
+      "command": "npx",
+      "args": ["tsx", "/caminho/absoluto/para/spec-forge/apps/mcp-server/src/index.ts"]
+    }
+  }
+}
+```
+
 ## Estrutura
 
 ```
