@@ -157,7 +157,19 @@ projetos com skills locais continuam usando a versão local, que tem prioridade)
 ### Setup do comando (uma vez), estilo `uv tool install`
 
 Equivalente a `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z`
-— **testado de verdade** contra [github.com/rafaelandrade74/spec-forge](https://github.com/rafaelandrade74/spec-forge):
+— **testado de verdade** contra [github.com/rafaelandrade74/spec-forge](https://github.com/rafaelandrade74/spec-forge).
+
+**Passo 1 — garanta que o bin global do pnpm está no PATH** (só na primeira vez; se
+`pnpm add -g` já funcionar no seu terminal, pule para o Passo 2):
+
+```powershell
+pnpm setup
+```
+
+Isso edita o profile do seu shell pra adicionar o diretório global do pnpm ao PATH. **Feche e abra
+um terminal novo** depois de rodar — o PATH só atualiza em sessões novas.
+
+**Passo 2 — instale**:
 
 ```bash
 pnpm add -g github:rafaelandrade74/spec-forge#path:apps/cli
@@ -168,10 +180,8 @@ repo git — é o que faz funcionar sem precisar clonar nada manualmente. `dist/
 `apps/cli` são versionados no repo de propósito (ver `apps/cli/README.md`), então não precisa
 rodar nenhum build no seu lado.
 
-Se o bin global do pnpm ainda não estiver no PATH, rode `pnpm setup` uma vez (mexe no seu profile
-de shell) e abra um novo terminal antes do comando acima.
-
-**Alternativa sem pnpm** (npm não entende a sintaxe `#path:`, então é clone + install local):
+**Alternativa sem pnpm** (não precisa do Passo 1; npm não entende a sintaxe `#path:`, então é
+clone + install local em vez de instalar direto do git):
 
 ```bash
 git clone https://github.com/rafaelandrade74/spec-forge.git
@@ -179,7 +189,7 @@ npm install -g ./spec-forge/apps/cli
 ```
 
 Isso também funciona direto de um checkout que você já tenha localmente (`npm install -g
-./apps/cli`, rodando da raiz do repo), sem precisar do PATH do pnpm.
+./apps/cli`, rodando da raiz do repo).
 
 Pra atualizar depois de uma nova versão: rode o mesmo comando de novo (reinstala por cima).
 
