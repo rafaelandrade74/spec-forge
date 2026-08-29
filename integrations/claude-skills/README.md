@@ -16,9 +16,10 @@ instead, see the root README's end-to-end flow).
 
 ## Prerequisites
 
-1. The Spec-Forge MCP server must be registered in Claude Code (locally via stdio, or remotely via
-   HTTP + bearer token if you deployed it to a homelab — see the root README's "Integrar ao Claude
-   Code" section) and reachable when you run any `/speckit-*` command.
+1. The Spec-Forge MCP server must be registered in Claude Code (locally via stdio — see the root
+   README's "Rodar o servidor MCP sozinho" section — or remotely via HTTP + bearer token if you
+   deployed it to a homelab — see "Deploy no homelab" → "3. Registrar no Claude Code") and
+   reachable when you run any `/speckit-*` command.
 2. The target project should already have spec-kit installed (`specify init`, or an existing
    `.claude/skills/speckit-*` directory) — you're replacing files inside an existing installation,
    not bootstrapping spec-kit from scratch. `.specify/templates/`, `.specify/scripts/`, and

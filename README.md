@@ -1,5 +1,7 @@
 # Spec-Forge
 
+[github.com/rafaelandrade74/spec-forge](https://github.com/rafaelandrade74/spec-forge)
+
 MCP server + roadmap de especificações estilo [spec-kit](https://github.com/github/spec-kit), com `constitution → specify → clarify → plan → tasks → analyze` persistidos em PostgreSQL. O `implement` fica fora do sistema: uma sessão de implementação (Claude Code ou outra IA) consome os itens já refinados via a tool MCP `get_next_task`. Ao concluir todas as tasks de uma feature, o sistema gera automaticamente a documentação final (banco + arquivo markdown no repo, com o ID único da feature).
 
 Veja "Estrutura" mais abaixo para como o monorepo está organizado.
@@ -7,6 +9,8 @@ Veja "Estrutura" mais abaixo para como o monorepo está organizado.
 ## Setup
 
 ```bash
+git clone https://github.com/rafaelandrade74/spec-forge.git
+cd spec-forge
 pnpm install
 docker compose up -d          # sobe Postgres local na porta 5433
 pnpm db:generate               # gera migrations a partir do schema (packages/db)
@@ -36,7 +40,18 @@ o token em `/tokens` na Web UI) em vez de rodar via stdio.
 pnpm mcp:dev
 ```
 
-Configure como servidor MCP local (stdio) no Claude Code apontando para `apps/mcp-server/src/index.ts` (via `tsx`) ou para o build em `apps/mcp-server/dist/index.js` (`pnpm build`).
+Com `--scope user` (disponível em qualquer sessão do Claude Code, não só dentro deste repo) o
+caminho precisa ser absoluto — rode a partir da raiz do seu checkout:
+
+```bash
+claude mcp add --scope user spec-forge -- npx tsx "$(pwd)/apps/mcp-server/src/index.ts"
+```
+
+No PowerShell: `claude mcp add --scope user spec-forge -- npx tsx "$PWD\apps\mcp-server\src\index.ts"`.
+
+Se preferir essa config versionada só neste repo (`.mcp.json`, caminho relativo funciona), use
+`--scope project` em vez de `--scope user`. Em qualquer um dos casos, dá pra apontar para o build
+(`pnpm --filter @spec-forge/mcp-server build`) em vez de `tsx`, usando `node .../apps/mcp-server/dist/index.js`.
 
 ## Testar o ciclo ponta a ponta sem UI
 
@@ -125,7 +140,7 @@ packages/db/         schema Drizzle + migrations + client Postgres
 packages/core/        serviços de negócio (usados por mcp-server e web)
 apps/mcp-server/      servidor MCP — stdio (dev local) ou HTTP com bearer token (homelab)
 apps/web/             Next.js — dashboard/roadmap/refinamento (Server Actions sobre packages/core)
-integrations/claude-skills/   skills /speckit-* adaptados para persistir no Spec-Forge (ver seu README)
+integrations/claude-skills/   skills /speckit-* adaptados para persistir no Spec-Forge (ver integrations/claude-skills/README.md)
 ```
 
 ## Usando seus comandos /speckit-* já existentes
@@ -163,8 +178,8 @@ git clone https://github.com/rafaelandrade74/spec-forge.git
 npm install -g ./spec-forge/apps/cli
 ```
 
-Isso também funciona direto no seu checkout local do monorepo (`npm install -g
-"C:\Users\rafae\source\repos\spec-forge\apps\cli"`), sem precisar do PATH do pnpm.
+Isso também funciona direto de um checkout que você já tenha localmente (`npm install -g
+./apps/cli`, rodando da raiz do repo), sem precisar do PATH do pnpm.
 
 Pra atualizar depois de uma nova versão: rode o mesmo comando de novo (reinstala por cima).
 
