@@ -21,7 +21,6 @@
     "sync-templates": "node scripts/sync-templates.mjs",
     "dev": "node scripts/sync-templates.mjs && tsx src/index.ts",
     "build": "node scripts/sync-templates.mjs && tsc",
-    "prepare": "node scripts/sync-templates.mjs && tsc",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

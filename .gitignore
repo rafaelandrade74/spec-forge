@@ -1,5 +1,7 @@
 node_modules/
 dist/
+!apps/cli/dist/
+!apps/cli/templates/
 .next/
 *.tsbuildinfo
 .env
@@ -7,5 +9,4 @@ dist/
 !.env.*.example
 *.log
 .pnpm-store/
-apps/cli/templates/
 .DS_Store
