@@ -141,30 +141,32 @@ projetos com skills locais continuam usando a versão local, que tem prioridade)
 
 ### Setup do comando (uma vez), estilo `uv tool install`
 
-Enquanto o repositório é só local (antes do push pro GitHub), instale a partir do caminho no disco —
-o `npm install -g` já roda o build sozinho (script `prepare`), não precisa `pnpm build` manual:
+Equivalente a `uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z`
+— **testado de verdade** contra [github.com/rafaelandrade74/spec-forge](https://github.com/rafaelandrade74/spec-forge):
 
 ```bash
-npm install -g "C:\Users\rafae\source\repos\spec-forge\apps\cli"
+pnpm add -g github:rafaelandrade74/spec-forge#path:apps/cli
 ```
 
-Isso já deixa `spec-forge` disponível em qualquer terminal/diretório (o bin global do npm já fica no
-PATH por padrão no Windows, diferente do pnpm — não precisa de `pnpm setup`).
+`#path:apps/cli` é sintaxe do **pnpm** (não do npm) para instalar a partir de um subdiretório de um
+repo git — é o que faz funcionar sem precisar clonar nada manualmente. `dist/` e `templates/` do
+`apps/cli` são versionados no repo de propósito (ver `apps/cli/README.md`), então não precisa
+rodar nenhum build no seu lado.
 
-**Depois que o repo estiver público no GitHub**, o equivalente a
-`uv tool install specify-cli --from git+https://github.com/github/spec-kit.git@vX.Y.Z` vira:
+Se o bin global do pnpm ainda não estiver no PATH, rode `pnpm setup` uma vez (mexe no seu profile
+de shell) e abra um novo terminal antes do comando acima.
+
+**Alternativa sem pnpm** (npm não entende a sintaxe `#path:`, então é clone + install local):
 
 ```bash
-npm install -g git+https://github.com/<seu-usuario>/spec-forge.git#main:apps/cli
+git clone https://github.com/rafaelandrade74/spec-forge.git
+npm install -g ./spec-forge/apps/cli
 ```
 
-(o `#main:apps/cli` diz pro npm clonar o repo inteiro e instalar a partir do subdiretório
-`apps/cli` — sintaxe de "git url com subdiretório" do npm). Se essa sintaxe der problema em algum
-ambiente, o fallback sempre funciona: `git clone` o repo em qualquer lugar e rodar
-`npm install -g ./spec-forge/apps/cli` como acima.
+Isso também funciona direto no seu checkout local do monorepo (`npm install -g
+"C:\Users\rafae\source\repos\spec-forge\apps\cli"`), sem precisar do PATH do pnpm.
 
-Pra atualizar depois de um `git pull`/nova versão: rode o mesmo comando de novo (reinstala por
-cima).
+Pra atualizar depois de uma nova versão: rode o mesmo comando de novo (reinstala por cima).
 
 ### Uso
 
